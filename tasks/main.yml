@@ -1,0 +1,85 @@
+---  
+- name: Install necessary packages for ruby installation
+  apt: pkg={{ item }} state=installed
+  with_items:
+    - autoconf
+    - automake
+    - bison
+    - build-essential
+    - curl
+    - exuberant-ctags
+    - git-core
+    - git
+    - libreadline6
+    - libreadline6-dev
+    - libreadline-dev
+    - libsqlite3-0
+    - libsqlite3-dev
+    - libssl-dev
+    - libyaml-dev
+    - libc6-dev
+    - libncurses5-dev
+    - libtool
+    - libxml2-dev
+    - libxslt1-dev
+    - openssl
+    - sqlite3
+    - subversion
+    - zlib1g
+    - zlib1g-dev
+
+- name: Installs rbenv
+  # command: "su {{ user }} -c 'git clone git://github.com/sstephenson/rbenv.git ~/.rbenv'"
+  sudo: yes
+  sudo_user: webmaster
+  git: repo=git://github.com/sstephenson/rbenv.git dest=~webmaster/.rbenv
+
+- name: Ensure fragments bash dir exists
+  file: dest=/home/{{ user }}/.bash.d/ state=directory owner={{ user }}
+  sudo: yes
+  sudo_user: webmaster
+
+- name: Installs rbenv bash file
+  copy: src=50_rbenv.bash dest=~webmaster/.bash.d/50_rbenv.bash mode=700 owner=webmaster
+
+- name: Source rbenv bash file in dot bashrc
+  lineinfile: dest=~webmaster/.bash_profile regexp="rbenv" insertafter=EOF line="source ~/.bash.d/50_rbenv.bash" create=yes
+  sudo: yes
+  sudo_user: webmaster
+
+- name: Source rbenv bash file in dot bashrc
+  lineinfile: dest=~webmaster/.bashrc regexp="rbenv" insertafter=EOF line="source ~/.bash.d/50_rbenv.bash" create=yes
+  sudo: yes
+  sudo_user: webmaster
+
+- name: Creates plugin directory
+  file: path=~webmaster/.rbenv/plugins/ owner=webmaster mode=0755 state=directory
+
+- name: Installs ruby-build
+  sudo: yes
+  sudo_user: webmaster
+  git: repo=git://github.com/sstephenson/ruby-build.git dest=~webmaster/.rbenv/plugins/ruby-build
+
+- name: Adds .gemrc
+  copy: src=gemrc dest=~webmaster/.gemrc owner=webmaster mode=0750
+
+- name: "Checks ruby is installed"
+  command: "su webmaster -c bash -lc 'rbenv versions | grep {{ ruby_version }}'"
+  register: ruby_installed
+  ignore_errors: yes
+
+- name: Installs ruby
+  command: "su webmaster -c bash -lc 'CONFIGURE_OPTS=--disable-install-rdoc rbenv install {{ ruby_version }}'"
+  # Takes no more than 600 secs on a small VM
+  async: 600
+  poll: 30
+  when: ruby_installed|failed
+
+- name: "Checks if bundler is installed"
+  command: "su webmaster -c bash -lc 'rbenv global {{ ruby_version }} && rbenv rehash && gem list | grep bundler'"
+  register: bundler_installed
+  ignore_errors: yes
+
+- name: "Install bundler"
+  command: "su webmaster -c bash -lc 'rbenv global {{ ruby_version }} && rbenv rehash && gem install bundler'"
+  when: bundler_installed|failed
