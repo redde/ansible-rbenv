@@ -49,7 +49,7 @@
   copy:
     src: 50_rbenv.bash
     dest: "~{{ user }}/.bash.d/50_rbenv.bash"
-    mode: 700
+    mode: 770
     owner: "{{ user }}"
 
 - name: Source rbenv bash file in dot bashrc
@@ -85,6 +85,9 @@
     dest: "~{{ user }}/.rbenv/plugins/ruby-build"
   sudo: yes
   sudo_user: "{{ user }}"
+
+- name: Changes owner for bash files
+  command: "chown -R {{ user }} /home/{{ user }}/.bash.d /home/{{ user }}/.rbenv /home/{{ user }}/.bash_profile /home/{{ user }}/.bashrc"
 
 - name: Adds .gemrc
   copy:
