@@ -1,0 +1,19 @@
+---
+galaxy_info:
+  author: Oleg Bovykin
+  description: Install rbenv for use on rails server
+  license: MIT
+  min_ansible_version: 1.4
+  platforms:
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - lenny
+        - squeeze
+        - wheezy
+  categories:
+    - ruby
+    - rbenv
+dependencies: []
