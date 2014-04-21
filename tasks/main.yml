@@ -40,6 +40,7 @@
     dest: "/home/{{ user }}/.bash.d/"
     state: directory
     owner: "{{ user }}"
+    group: "{{ user }}"
   sudo: yes
   sudo_user: "{{ user }}"
 
@@ -49,6 +50,7 @@
     dest: "~{{ user }}/.bash.d/50_rbenv.bash"
     mode: 700
     owner: "{{ user }}"
+    group: "{{ user }}"
 
 - name: Source rbenv bash file in dot bashrc
   lineinfile:
@@ -74,6 +76,7 @@
   file:
     path: "~{{ user }}/.rbenv/plugins/"
     owner: "{{ user }}"
+    group: "{{ user }}"
     mode: 0755
     state: directory
 
@@ -89,6 +92,7 @@
     src: gemrc
     dest: "~{{ user }}/.gemrc"
     owner: "{{ user }}"
+    group: "{{ user }}"
     mode: 0750
 
 - name: "Checks ruby is installed"
