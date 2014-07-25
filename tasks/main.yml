@@ -1,4 +1,4 @@
----  
+---
 - name: Install necessary packages for ruby installation
   apt: pkg={{ item }} state=installed
   with_items:
@@ -31,9 +31,10 @@
 - name: Installs rbenv
   git:
     repo: git://github.com/sstephenson/rbenv.git
-    dest: "~{{ user }}/.rbenv"
-  sudo: yes
-  sudo_user: "{{ user }}"
+    dest: "/home/{{ user }}/.rbenv"
+
+- name: Change permissions for rbenv
+  command: "chown -R {{ user }} /home/{{ user }}/.rbenv"
 
 - name: Ensure fragments bash dir exists
   command: "su {{ user }} -c bash -lc 'mkdir -p ~/.bash.d'"
@@ -74,7 +75,7 @@
 
 - name: Creates plugin directory
   file:
-    path: "~{{ user }}/.rbenv/plugins/"
+    path: "/home/{{ user }}/.rbenv/plugins/"
     owner: "{{ user }}"
     mode: 0755
     state: directory
@@ -82,9 +83,10 @@
 - name: Installs ruby-build
   git:
     repo: git://github.com/sstephenson/ruby-build.git
-    dest: "~{{ user }}/.rbenv/plugins/ruby-build"
-  sudo: yes
-  sudo_user: "{{ user }}"
+    dest: "/home/{{ user }}/.rbenv/plugins/ruby-build"
+
+- name: Change permissions for ruby-build
+  command: "chown -R {{ user }} /home/{{ user }}/.rbenv"
 
 - name: Changes owner for bash files
   command: "chown -R {{ user }} /home/{{ user }}/.bash.d /home/{{ user }}/.rbenv /home/{{ user }}/.bash_profile /home/{{ user }}/.bashrc"
