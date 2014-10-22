@@ -32,6 +32,7 @@
   git:
     repo: git://github.com/sstephenson/rbenv.git
     dest: "/home/{{ user }}/.rbenv"
+    accept_hostkey: true
 
 - name: Change permissions for rbenv
   command: "chown -R {{ user }} /home/{{ user }}/.rbenv"
