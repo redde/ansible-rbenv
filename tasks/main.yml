@@ -72,7 +72,7 @@
     line: "source ~/.bash.d/50_rbenv.bash"
     create: yes
   sudo: yes
-  sudo_user: webmaster
+  sudo_user: "{{ user }}"
 
 - name: Creates plugin directory
   file:
